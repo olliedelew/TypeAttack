@@ -157,17 +157,21 @@ def Scores(score):
     text = small.render("Score: " + str(score), True, white)
     screen.blit(text, [0,0])
 
+with open("Highscore.txt","r") as h:
+    high = h.read()
+    high = int(high[0])
+    print(high)
+
 
 
 def highscore(score):
-    with open("Highscore.txt","r+") as h:
-        high = h.read()
-        high = int(high[0])
-        print(high)
-        highscore = high
-        if score > highscore:
-            score = highscore
-            high.write(highscore)
+    overwrite = open("Highscore.txt","w")
+    highscore = high
+    print(highscore)
+    if score > highscore:
+        score = highscore
+        overwrite.write(str(highscore))
+
 
     
 def GameLoop():
@@ -210,7 +214,8 @@ def GameLoop():
     while not gameExit:
         while gameOver == True:
             message_display("You are dead!", red, 0, "large")
-            # highscore(score)
+            highscore(score)
+            print("Highscore: ", highscore)
             pygame.display.update()
             time.sleep(2)
             MainMenu()
