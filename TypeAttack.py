@@ -157,16 +157,16 @@ def Scores(score):
     text = small.render("Score: " + str(score), True, white)
     screen.blit(text, [0,0])
 
-# with open("Highscore.txt","r+") as h:
-#     high = h.readlines()
-#     high = list(map(int, high))
-#     print(high)
+with open("Highscore.txt","r+") as h:
+    high = h.readlines()
+    high = int(high[0])
+    print(high)
 
-# def highscore(score):
-#     highscore = high
-#     if score > highscore:
-#         score = highscore
-#         high.write(highscore)
+def highscore(score):
+    highscore = high
+    if score > highscore:
+        score = highscore
+        high.write(highscore)
 
     
 def GameLoop():
