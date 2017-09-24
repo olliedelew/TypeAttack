@@ -34,6 +34,7 @@ clock = pygame.time.Clock()
 #Pixel[10][10] = red
 shooter_image = pygame.image.load("shooter.png")
 enemy_image = pygame.image.load("enemy.png")
+bullet_image = pygame.image.load("bullet.png") 
 
 with open("wordy.txt","r") as f:
     words = f.readlines()
@@ -101,6 +102,8 @@ def pause():
 def shooter(x,y):
     screen.blit(shooter_image,(x,y))
 
+
+
 def button_text(text,colour,buttonx,buttony,buttonwidth,buttonheight,size = "medium"):
     TextSurf, TextRect = text_objects(text, colour, size)
     TextRect.center = ((buttonx+(buttonwidth/2)), (buttonheight/2)+buttony)
@@ -124,8 +127,8 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
 
     button_text(text,black,x,y,width,height)
 
-
-
+def Bullet(x,y):
+    screen.blit(bullet_image,(x,y))
 
 def MainMenu():
     menu = True
@@ -145,9 +148,8 @@ def MainMenu():
 
 
 
-        button("Play", 175, 600, 300, 75, Dgreen, green, action = "play")
-        button("Something", 650,600,300,75, Dblue, blue, action = "something")
-        button("Quit", 1125,600,300,75, Dred, red, action = "quit")
+        button("Play", 333, 600, 300, 75, Dgreen, green, action = "play")
+        button("Quit", 966,600,300,75, Dred, red, action = "quit")
 
         pygame.display.update()
                         
@@ -164,16 +166,16 @@ with open("Highscore.txt","r") as h:
 
 
 
-def highscore(score):
+def Highscore(score):
     overwrite = open("Highscore.txt","w")
-    highscore = high
-    print(highscore)
-    if score > highscore:
-        score = highscore
-        overwrite.write(str(highscore))
+    highscre = high
+    if score > highscre:
+        highscre = score 
+        overwrite.write(str(highscre))
+        return highscre
+    else:
+        overwrite.write(str(highscre))
 
-
-    
 def GameLoop():
     gameExit = False
     gameOver = False
@@ -210,12 +212,14 @@ def GameLoop():
     shooter_frontx = shooter_x + shooter_width
     shooter_topy = shooter_y + shooter_height
     score = 0
+    bullet_x = 150
+    bullet_y = 400
+    bullet_speed = 0.1
 
     while not gameExit:
         while gameOver == True:
             message_display("You are dead!", red, 0, "large")
-            highscore(score)
-            print("Highscore: ", highscore)
+            Highscore(score)
             pygame.display.update()
             time.sleep(2)
             MainMenu()
@@ -263,10 +267,33 @@ def GameLoop():
                         print("".join(splitword[activatedIndex]))
                         print(len(splitword[activatedIndex]))
                         if not splitword[activatedIndex]:
+                            Bullet(bullet_x,bullet_y)
+                            while (bullet_x != spaceship_x) and (bullet_y != spaceship_y[activatedIndex]):
+                                if bullet_x < spaceship_x[activatedIndex] and bullet_y < spaceship_y[activatedIndex]:
+                                    bullet_x += bullet_speed
+                                    print("bullet X: ", bullet_x)
+                                    print("spaceship X: ", spaceship_x[activatedIndex])
+                                    #break
+                                    bullet_y += bullet_speed
+                                    print("bul Y < spc Y: ", bullet_y)
+                                    print("spaceship Y: ", spaceship_y[activatedIndex])
+                                    break
+                                elif bullet_x < spaceship_x[activatedIndex] and bullet_y > spaceship_y[activatedIndex]:
+                                    bullet_x += bullet_speed
+                                    print("bullet X: ", bullet_x)
+                                    print("spaceship X: ", spaceship_x[activatedIndex])
+                                    bullet_y -= bullet_speed
+                                    print("bul Y > spc Y: ", bullet_y)
+                                    print("spaceship Y: ", spaceship_y[activatedIndex])
+                                    break
+                                elif bullet_x < spaceship_x[activatedIndex] and bullet_y == spaceship_y[activatedIndex]:
+                                    print("bul Y = spc Y", bullet_y)
+                                    break
+                                pygame.display.update()
+                                clock.tick(60)                            
                             print("Score: ", score)
                             print("Enemy destroyed")
                             score += 1
-                            # spaceships(spaceship_x+50,spaceship_y,word)
                             word[activatedIndex] = random.choice(words)
                             splitword[activatedIndex] = list(word[activatedIndex])
                             splitword[activatedIndex] = splitword[activatedIndex][:-1]
@@ -274,11 +301,7 @@ def GameLoop():
                             spaceship_x[activatedIndex] = 1750
                             print(spaceship_x[activatedIndex],spaceship_y[activatedIndex])
                             activatedIndex = -1
-
-                      #      else:
-                        #        print("incorrect")
-
-                                                
+                 
         screen.fill(black)
     # do everything after filling screen in
         Scores(score)
@@ -301,24 +324,10 @@ def GameLoop():
                 if spaceship_y[i] > shooter_y and spaceship_y[i] < shooter_topy or spaceship_topy[i] < shooter_topy and spaceship_topy[i] > shooter_y:
                     print("dead")
                     gameOver = True
-        
-
 
         shooter(shooter_x,shooter_y)
 
 
-            
-                # may have to invert all the > or < signs for y's because y increases as it goes down
-#        print("x: ", spaceship_x, "y: ", spaceship_y)
-
-##        if (spaceship_x == 150) and (100<spaceship_y<500):
-##            dead()
-            
-        
-        #collisions = detectCollisions(0,225,150,150,spaceship_x,spaceship_y,spaceship_width,spaceship_height)
-        #if spaceship_x == 150:
-         #  health = health - 10
-            #print(health)
         pygame.display.update()
         clock.tick(60)
 
@@ -330,6 +339,7 @@ class Shooter(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self, self.groups)
         self.image = Shooter.image
         self.rect = self.image.get_rect()
+
     #def render(self,collision):
         #if (collision==True):
             #message_display("You have crashed!")
