@@ -1,6 +1,0 @@
-Moving bullet
-Waves of sprites that increase in speed and number
-fix the length of words and probably change the enemy sprite
-fix the collision between the (shooter and spaceships) and (bullet and spaceships)
-Highscore displayed?
-Turn them all into classes?
