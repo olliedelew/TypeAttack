@@ -52,10 +52,10 @@ def spaceships(cordx,cordy,word, isActivated):
     #for i in range(numspaceships)
     screen.blit(enemy_image,(cordx,cordy))
     if isActivated:
-        pygame.draw.rect(screen,white,[cordx+29,cordy+50,95,40])
+        pygame.draw.rect(screen,white,[cordx+29,cordy+50,110,25])
     else:    
-        pygame.draw.rect(screen,green,[cordx+29,cordy+50,95,40])
-    word_text(word,black,cordx+29,cordy+50,95,40)
+        pygame.draw.rect(screen,green,[cordx+29,cordy+50,110,25])
+    word_text(word,black,cordx+29,cordy+50,110,25)
 
     #pygame.display.update()
 
@@ -156,8 +156,13 @@ def MainMenu():
         clock.tick(15)
         
 def Scores(score):
-    text = small.render("Score: " + str(score), True, white)
+    text = medium.render("Score: " + str(score), True, white)
     screen.blit(text, [0,0])
+
+def Wave(wave):
+    text = medium.render("Wave: " + str(wave), True, white)
+    screen.blit(text, [800,0])
+
 
 with open("Highscore.txt","r") as h:
     high = h.read()
@@ -212,6 +217,7 @@ def GameLoop():
     shooter_frontx = shooter_x + shooter_width
     shooter_topy = shooter_y + shooter_height
     score = 0
+    wave = 1
     bullet_x = 150
     bullet_y = 400
     bullet_speed = 0.1
@@ -275,7 +281,7 @@ def GameLoop():
                                     print("spaceship X: ", spaceship_x[activatedIndex])
                                     #break
                                     bullet_y += bullet_speed
-                                    print("bul Y < spc Y: ", bullet_y)
+                                    print("bul Y < spc Y: ", bullet_y) #(y is inverted in pygame)
                                     print("spaceship Y: ", spaceship_y[activatedIndex])
                                     break
                                 elif bullet_x < spaceship_x[activatedIndex] and bullet_y > spaceship_y[activatedIndex]:
@@ -283,16 +289,17 @@ def GameLoop():
                                     print("bullet X: ", bullet_x)
                                     print("spaceship X: ", spaceship_x[activatedIndex])
                                     bullet_y -= bullet_speed
-                                    print("bul Y > spc Y: ", bullet_y)
+                                    print("bul Y > spc Y: ", bullet_y) #(y is inverted in pygame)
                                     print("spaceship Y: ", spaceship_y[activatedIndex])
                                     break
                                 elif bullet_x < spaceship_x[activatedIndex] and bullet_y == spaceship_y[activatedIndex]:
+                                    bullet_x += bullet_speed
                                     print("bul Y = spc Y", bullet_y)
                                     break
                                 pygame.display.update()
                                 clock.tick(60)                            
-                            print("Score: ", score)
-                            print("Enemy destroyed")
+                            # print("Score: ", score)
+                            # print("Enemy destroyed")
                             score += 1
                             word[activatedIndex] = random.choice(words)
                             splitword[activatedIndex] = list(word[activatedIndex])
@@ -305,9 +312,14 @@ def GameLoop():
         screen.fill(black)
     # do everything after filling screen in
         Scores(score)
+        Wave(wave)
         for i in range(numspaceships):
             spaceships(spaceship_x[i],spaceship_y[i],word[i], i == activatedIndex)
             spaceship_x[i] += spaceship_speed[i]
+            # if spaceship_y[i] > 0:
+            #     spaceship_y[i] = random.uniform(-0.5,0)
+            # elif spaceship_y[i] < 625:
+            #     spaceship_y[i] = random.uniform(0,0.5)
             if spaceship_y[i] > 325:
                 spaceship_y[i] -= 0.5
             else:
