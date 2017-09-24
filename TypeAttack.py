@@ -81,9 +81,12 @@ def message_display(text, colour, y_displace=0, size = "large"):
     TextRect.center = ((screen_width/2),(screen_height/2)+y_displace)
     screen.blit(TextSurf, TextRect)
 
-def pause():
+def pause(score, wave):
 
     paused = True
+    screen.fill(black)
+    Scores(score)
+    Wave(wave)
     message_display("Paused",red,-50,"large")
     message_display("Press C to continue", white, 50, "medium")
     pygame.display.update()
@@ -198,8 +201,8 @@ def GameLoop():
     anyActivated = False
     activatedIndex = -1
     for i in range(numspaceships):
-        spaceship_height[i] = 141
-        spaceship_width[i] = 148
+        spaceship_height[i] = 50
+        spaceship_width[i] = 50
         spaceship_y[i] = random.randrange(0, screen_height - spaceship_height[i])
         spaceship_x[i] = 1750
         spaceship_backx[i] = spaceship_x[i] + spaceship_width[i]
@@ -236,7 +239,7 @@ def GameLoop():
                  gameExit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                   pause()
+                   pause(score, wave)
         #for i in range(len(splitword)):
             #for event in pygame.event.get():
 ##                if event.type == pygame.KEYDOWN:
@@ -306,6 +309,7 @@ def GameLoop():
                             splitword[activatedIndex] = splitword[activatedIndex][:-1]
                             word[activatedIndex] = "".join(splitword[activatedIndex])
                             spaceship_x[activatedIndex] = 1750
+                            spaceship_y[activatedIndex] = random.randrange(0, screen_height - spaceship_height[activatedIndex])
                             print(spaceship_x[activatedIndex],spaceship_y[activatedIndex])
                             activatedIndex = -1
                  
@@ -324,10 +328,10 @@ def GameLoop():
                 spaceship_y[i] -= 0.5
             else:
                 spaceship_y[i] += 0.5
-            if spaceship_x[i] < -150:
-                spaceship_x[i] = 1750 #+ spaceship_width
-                spaceship_y[i] = random.randrange(0,screen_height)
-            if spaceship_y[i] > 650:
+            # if spaceship_x[i] < -(spaceship_y:
+            #     spaceship_x[i] = screen_width + spaceship_width
+            #     spaceship_y[i] = random.randrange(0,screen_height)
+            if spaceship_y[i] > screen_height - spaceship_height[i]:
                 spaceship_y[i] = random.randrange(0,screen_height)
             elif spaceship_y[i] < 0:
                 spaceship_y[i] = random.randrange(0,screen_height)
