@@ -36,8 +36,7 @@ shooter_image = pygame.image.load("shooter.png")
 enemy_image = pygame.image.load("enemy.png")
 bullet_image = pygame.image.load("bullet.png") 
 
-with open("wordy.txt","r") as f:
-    words = f.readlines()
+
 #for i in range (len (words)):
     #print(words[i])
 #word = random.choice(words)
@@ -121,10 +120,19 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
             if action == "quit":
                 pygame.quit()
                 quit()
-            if action == "controls":
-                pass
+            if action == "wordz":
+                txtfilespage()
             if action == "play":
                 GameLoop()
+            if action == "randomwords":
+                textfile = "wordy.txt"
+                MainMenu()
+            if action == "biology":
+                textfile = "biology.txt"
+                MainMenu()
+            if action == "history":
+                textfile = "history.txt"
+                MainMenu()
     else:
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
 
@@ -142,6 +150,7 @@ def MainMenu():
                 quit()
 
         screen.fill(white)
+        showHighscore(high)
         message_display("Type Attack", blueish, -150, "large")
         message_display("Type the words as quick as you can", black, -80, "medium")
         message_display("The more words you type correctly, the higher your score", black, -20, "medium")
@@ -151,8 +160,9 @@ def MainMenu():
 
 
 
-        button("Play", 333, 600, 300, 75, Dgreen, green, action = "play")
-        button("Quit", 966,600,300,75, Dred, red, action = "quit")
+        button("Play", 175, 600, 300, 75, Dgreen, green, action = "play")
+        button("Choose words", 650,600,300,75, Dblue, blue, action = "wordz")
+        button("Quit", 1125,600,300,75, Dred, red, action = "quit")
 
         pygame.display.update()
                         
@@ -169,7 +179,8 @@ def Wave(wave):
 
 with open("Highscore.txt","r") as h:
     high = h.read()
-    high = int(high[0])
+    print(high)
+    high = int(high)
     print(high)
 
 
@@ -183,6 +194,30 @@ def Highscore(score):
         return highscre
     else:
         overwrite.write(str(highscre))
+
+def showHighscore(highscre):
+    text = medium.render("Highscore: " + str(high), True, black)
+    screen.blit(text, [700,0])
+
+def txtfilespage():
+    pageopen = True
+    while pageopen:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        screen.fill(white)
+        message_display("Select which kind of words you would like to appear", black, -200, "medium")
+        button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
+        button("Biology keywords", 650,600,300,75, Dblue, blue, action = "biology")
+        button("History keywords", 1125,600,300,75, Dred, red, action = "history")
+        pygame.display.update()
+                        
+        clock.tick(15)
+
+# textfile = ""
+# with open(textfile,"r") as f:
+#     words = f.readlines()
 
 def GameLoop():
     gameExit = False
@@ -228,11 +263,11 @@ def GameLoop():
     while not gameExit:
         while gameOver == True:
             message_display("You are dead!", red, 0, "large")
-            Highscore(score)
-            pygame.display.update()
+            # pygame.display.update()
             time.sleep(2)
+            Highscore(score)
             MainMenu()
-            pygame.display.update
+            pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                  gameOver = False
