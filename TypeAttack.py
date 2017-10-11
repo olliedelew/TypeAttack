@@ -123,16 +123,23 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
             if action == "wordz":
                 txtfilespage()
             if action == "play":
-                GameLoop()
+                #GameLoop(words)
+                pass
             if action == "randomwords":
                 textfile = "wordy.txt"
-                MainMenu()
+                with open(textfile,"r") as f:
+                    words = f.readlines()
+                GameLoop(words)
             if action == "biology":
                 textfile = "biology.txt"
-                MainMenu()
+                with open(textfile,"r") as f:
+                    words = f.readlines()
+                GameLoop(words)
             if action == "history":
                 textfile = "history.txt"
-                MainMenu()
+                with open(textfile,"r") as f:
+                    words = f.readlines()
+                GameLoop(words)
     else:
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
 
@@ -168,9 +175,13 @@ def MainMenu():
                         
         clock.tick(15)
         
-def Scores(score):
+def Scores(score,wave):
     text = medium.render("Score: " + str(score), True, white)
     screen.blit(text, [0,0])
+    if score == 4:
+        wave = wave + 1
+        numspaceships = 6
+        GameLoop()
 
 def Wave(wave):
     text = medium.render("Wave: " + str(wave), True, white)
@@ -215,11 +226,8 @@ def txtfilespage():
                         
         clock.tick(15)
 
-# textfile = ""
-# with open(textfile,"r") as f:
-#     words = f.readlines()
 
-def GameLoop():
+def GameLoop(words):
     gameExit = False
     gameOver = False
     numspaceships = 4
@@ -339,18 +347,20 @@ def GameLoop():
                             # print("Score: ", score)
                             # print("Enemy destroyed")
                             score += 1
+                               
                             word[activatedIndex] = random.choice(words)
                             splitword[activatedIndex] = list(word[activatedIndex])
                             splitword[activatedIndex] = splitword[activatedIndex][:-1]
                             word[activatedIndex] = "".join(splitword[activatedIndex])
-                            spaceship_x[activatedIndex] = 1750
-                            spaceship_y[activatedIndex] = random.randrange(0, screen_height - spaceship_height[activatedIndex])
+                            spaceship_x[activatedIndex] = -150
+                            spaceship_y[activatedIndex] = 700#random.randrange(0, screen_height - spaceship_height[activatedIndex])
                             print(spaceship_x[activatedIndex],spaceship_y[activatedIndex])
                             activatedIndex = -1
+                                
                  
         screen.fill(black)
     # do everything after filling screen in
-        Scores(score)
+        Scores(score,wave)
         Wave(wave)
         for i in range(numspaceships):
             spaceships(spaceship_x[i],spaceship_y[i],word[i], i == activatedIndex)
