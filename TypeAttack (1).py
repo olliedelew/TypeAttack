@@ -47,8 +47,8 @@ bullet_image = pygame.image.load("bullet.png")
 ##           words = f.readlines()
 ##print(words)
 
-def Enemies(cordx,cordy,word, isActivated):
-    #for i in range(numEnemies)
+def spaceships(cordx,cordy,word, isActivated):
+    #for i in range(numspaceships)
     screen.blit(enemy_image,(cordx,cordy))
     if isActivated:
         pygame.draw.rect(screen,white,[cordx+29,cordy+50,110,25])
@@ -120,26 +120,26 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
             if action == "quit":
                 pygame.quit()
                 quit()
-            elif action == "wordz":
+            if action == "wordz":
                 txtfilespage()
-            elif action == "play":
-                textfile = "random.txt"
+            if action == "play":
+                #GameLoop(words)
+                pass
+            if action == "randomwords":
+                textfile = "wordy.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
-##            elif action == "randomwords":
-##                textfile = "random.txt"
-##                with open(textfile,"r") as f:
-##                    words = f.readlines()
-##                    GameLoop(words)
-            elif action == "biology":
+                GameLoop(words)
+            if action == "biology":
                 textfile = "biology.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
-            elif action == "inputwords":
-                choose_words()
-            GameLoop(words)
+                GameLoop(words)
+            if action == "history":
+                textfile = "history.txt"
+                with open(textfile,"r") as f:
+                    words = f.readlines()
+                GameLoop(words)
     else:
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
 
@@ -161,8 +161,11 @@ def MainMenu():
         message_display("Type Attack", blueish, -150, "large")
         message_display("Type the words as quick as you can", black, -80, "medium")
         message_display("The more words you type correctly, the higher your score", black, -20, "medium")
-        message_display("Dont let the enemies touch you or you will die!", black, 40, "medium")
+        message_display("Dont let the spaceships touch you or you will die!", black, 40, "medium")
         message_display("press ESC to pause", black, 100, "medium")
+
+
+
 
         button("Play", 175, 600, 300, 75, Dgreen, green, action = "play")
         button("Choose words", 650,600,300,75, Dblue, blue, action = "wordz")
@@ -171,11 +174,14 @@ def MainMenu():
         pygame.display.update()
                         
         clock.tick(15)
-    MainMenu = False
         
-def Scores(score,x,y):
+def Scores(score,wave):
     text = medium.render("Score: " + str(score), True, white)
-    screen.blit(text, [x,y])
+    screen.blit(text, [0,0])
+    if score == 4:
+        wave = wave + 1
+        numspaceships = 6
+        GameLoop()
 
 def Wave(wave):
     text = medium.render("Wave: " + str(wave), True, white)
@@ -187,6 +193,8 @@ with open("Highscore.txt","r") as h:
     print(high)
     high = int(high)
     print(high)
+
+
 
 def Highscore(score):
     overwrite = open("Highscore.txt","w")
@@ -211,70 +219,38 @@ def txtfilespage():
                 quit()
         screen.fill(white)
         message_display("Select which kind of words you would like to appear", black, -200, "medium")
-        #button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
-        button("Biology keywords", 175,600,300,75, Dblue, blue, action = "biology")
-        button("input words", 1125,600,300,75, Dred, red, action = "inputwords")
+        button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
+        button("Biology keywords", 650,600,300,75, Dblue, blue, action = "biology")
+        button("History keywords", 1125,600,300,75, Dred, red, action = "history")
         pygame.display.update()
                         
         clock.tick(15)
-    pageopen = False
 
-def choose_words():
-    choosing_words = True
-    letters = []
-    screen.fill(black)
-    print("Working")
-    while choosing_words:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            if event.type == pygame.KEYDOWN:
-                letters.append(chr(event.key))
-                if event.key == pygame.K_BACKSPACE:
-                    del letters[-1]
-                if event.key == pygame.K_KP_ENTER:
-                    "".join(letters)
-                    with open("inputwords.txt","a") as f:
-                        file.write(letters)
-                    del letters[:]
-                message_display("Press escape to exit", black, -100, "medium")
-                if event.key == pygame.K_ESCAPE:
-                    textfile == "inputwords.txt"
-                    with open(textfile,"r") as f:
-                        words = f.readlines()
-                    GameLoop(words)
-    pygame.display.update()
-    clock.tick(15)
-
-# textfile = ""
-# with open(textfile,"r") as f:
-#     words = f.readlines()
 
 def GameLoop(words):
     gameExit = False
     gameOver = False
-    numEnemies = 4
-    Enemy_height = [0]*numEnemies
-    Enemy_width = [0]*numEnemies
-    Enemy_y = [0]*numEnemies
-    Enemy_x = [0]*numEnemies
-    Enemy_backx = [0]*numEnemies
-    Enemy_topy = [0]*numEnemies
-    Enemy_speed = [0]*numEnemies
-    word = [0]*numEnemies
-    splitword = [0]*numEnemies
-    activatedword = [False]*numEnemies
+    numspaceships = 4
+    spaceship_height = [0]*numspaceships
+    spaceship_width = [0]*numspaceships
+    spaceship_y = [0]*numspaceships
+    spaceship_x = [0]*numspaceships
+    spaceship_backx = [0]*numspaceships
+    spaceship_topy = [0]*numspaceships
+    spaceship_speed = [0]*numspaceships
+    word = [0]*numspaceships
+    splitword = [0]*numspaceships
+    activatedword = [False]*numspaceships
     anyActivated = False
     activatedIndex = -1
-    for i in range(numEnemies):
-        Enemy_height[i] = 50
-        Enemy_width[i] = 50
-        Enemy_y[i] = random.randrange(0, screen_height - Enemy_height[i])
-        Enemy_x[i] = random.randrange(1750, 1950)
-        Enemy_backx[i] = Enemy_x[i] + Enemy_width[i]
-        Enemy_topy[i] = Enemy_y[i] + Enemy_height[i]
-        Enemy_speed[i] = -3
+    for i in range(numspaceships):
+        spaceship_height[i] = 50
+        spaceship_width[i] = 50
+        spaceship_y[i] = random.randrange(0, screen_height - spaceship_height[i])
+        spaceship_x[i] = 1750
+        spaceship_backx[i] = spaceship_x[i] + spaceship_width[i]
+        spaceship_topy[i] = spaceship_y[i] + spaceship_height[i]
+        spaceship_speed[i] = -3
         word[i] = random.choice(words)
         splitword[i] = list(word[i])
         splitword[i] = splitword[i][:-1]
@@ -294,18 +270,16 @@ def GameLoop(words):
 
     while not gameExit:
         while gameOver == True:
-
-            message_display("You are dead!", red, -50, "large")
-            Scores(score,800,700)
-            pygame.display.update()
+            message_display("You are dead!", red, 0, "large")
+            # pygame.display.update()
             time.sleep(2)
             Highscore(score)
             MainMenu()
             pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                 gameOver == False
-                 gameExit == True
+                 gameOver = False
+                 gameExit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                    pause(score, wave)
@@ -327,12 +301,12 @@ def GameLoop(words):
                 if activatedIndex == -1:
                     bestMatchingIndex = -1 # index, xval
                     bestMatchingValue = 2000 # index, xval
-                    for i in range(numEnemies):
-                        # print('Enemy:', Enemy_x[i])
+                    for i in range(numspaceships):
+                        # print('spaceship:', spaceship_x[i])
                         # print('best', bestMatching[1])
-                        if Enemy_x[i] < bestMatchingValue and  key == splitword[i][0]:
+                        if spaceship_x[i] < bestMatchingValue and  key == splitword[i][0]:
                             bestMatchingIndex = i
-                            bestMatchingValue = Enemy_x[i]
+                            bestMatchingValue = spaceship_x[i]
                     if bestMatchingIndex > -1:
                         activatedIndex = bestMatchingIndex
                     print(activatedIndex)
@@ -346,25 +320,25 @@ def GameLoop(words):
                         print(len(splitword[activatedIndex]))
                         if not splitword[activatedIndex]:
                             Bullet(bullet_x,bullet_y)
-                            while (bullet_x != Enemy_x) and (bullet_y != Enemy_y[activatedIndex]):
-                                if bullet_x < Enemy_x[activatedIndex] and bullet_y < Enemy_y[activatedIndex]:
+                            while (bullet_x != spaceship_x) and (bullet_y != spaceship_y[activatedIndex]):
+                                if bullet_x < spaceship_x[activatedIndex] and bullet_y < spaceship_y[activatedIndex]:
                                     bullet_x += bullet_speed
                                     print("bullet X: ", bullet_x)
-                                    print("Enemy X: ", Enemy_x[activatedIndex])
+                                    print("spaceship X: ", spaceship_x[activatedIndex])
                                     #break
                                     bullet_y += bullet_speed
                                     print("bul Y < spc Y: ", bullet_y) #(y is inverted in pygame)
-                                    print("Enemy Y: ", Enemy_y[activatedIndex])
+                                    print("spaceship Y: ", spaceship_y[activatedIndex])
                                     break
-                                elif bullet_x < Enemy_x[activatedIndex] and bullet_y > Enemy_y[activatedIndex]:
+                                elif bullet_x < spaceship_x[activatedIndex] and bullet_y > spaceship_y[activatedIndex]:
                                     bullet_x += bullet_speed
                                     print("bullet X: ", bullet_x)
-                                    print("Enemy X: ", Enemy_x[activatedIndex])
+                                    print("spaceship X: ", spaceship_x[activatedIndex])
                                     bullet_y -= bullet_speed
                                     print("bul Y > spc Y: ", bullet_y) #(y is inverted in pygame)
-                                    print("Enemy Y: ", Enemy_y[activatedIndex])
+                                    print("spaceship Y: ", spaceship_y[activatedIndex])
                                     break
-                                elif bullet_x < Enemy_x[activatedIndex] and bullet_y == Enemy_y[activatedIndex]:
+                                elif bullet_x < spaceship_x[activatedIndex] and bullet_y == spaceship_y[activatedIndex]:
                                     bullet_x += bullet_speed
                                     print("bul Y = spc Y", bullet_y)
                                     break
@@ -373,40 +347,42 @@ def GameLoop(words):
                             # print("Score: ", score)
                             # print("Enemy destroyed")
                             score += 1
+                               
                             word[activatedIndex] = random.choice(words)
                             splitword[activatedIndex] = list(word[activatedIndex])
                             splitword[activatedIndex] = splitword[activatedIndex][:-1]
                             word[activatedIndex] = "".join(splitword[activatedIndex])
-                            Enemy_x[activatedIndex] = 1750
-                            Enemy_y[activatedIndex] = random.randrange(0, screen_height - Enemy_height[activatedIndex])
-                            print(Enemy_x[activatedIndex],Enemy_y[activatedIndex])
+                            spaceship_x[activatedIndex] = -150
+                            spaceship_y[activatedIndex] = 700#random.randrange(0, screen_height - spaceship_height[activatedIndex])
+                            print(spaceship_x[activatedIndex],spaceship_y[activatedIndex])
                             activatedIndex = -1
+                                
                  
         screen.fill(black)
     # do everything after filling screen in
-        Scores(score,0,0)
+        Scores(score,wave)
         Wave(wave)
-        for i in range(numEnemies):
-            Enemies(Enemy_x[i],Enemy_y[i],word[i], i == activatedIndex)
-            Enemy_x[i] += Enemy_speed[i]
-            # if Enemy_y[i] > 0:
-            #     Enemy_y[i] = random.uniform(-0.5,0)
-            # elif Enemy_y[i] < 625:
-            #     Enemy_y[i] = random.uniform(0,0.5)
-            if Enemy_y[i] > 370:
-                Enemy_y[i] -= 0.5
+        for i in range(numspaceships):
+            spaceships(spaceship_x[i],spaceship_y[i],word[i], i == activatedIndex)
+            spaceship_x[i] += spaceship_speed[i]
+            # if spaceship_y[i] > 0:
+            #     spaceship_y[i] = random.uniform(-0.5,0)
+            # elif spaceship_y[i] < 625:
+            #     spaceship_y[i] = random.uniform(0,0.5)
+            if spaceship_y[i] > 325:
+                spaceship_y[i] -= 0.5
             else:
-                Enemy_y[i] += 0.5
-            # if Enemy_x[i] < -(Enemy_y:
-            #     Enemy_x[i] = screen_width + Enemy_width
-            #     Enemy_y[i] = random.randrange(0,screen_height)
-            if Enemy_y[i] > screen_height - Enemy_height[i]:
-                Enemy_y[i] = random.randrange(0,screen_height)
-            elif Enemy_y[i] < 0:
-                Enemy_y[i] = random.randrange(0,screen_height)
+                spaceship_y[i] += 0.5
+            # if spaceship_x[i] < -(spaceship_y:
+            #     spaceship_x[i] = screen_width + spaceship_width
+            #     spaceship_y[i] = random.randrange(0,screen_height)
+            if spaceship_y[i] > screen_height - spaceship_height[i]:
+                spaceship_y[i] = random.randrange(0,screen_height)
+            elif spaceship_y[i] < 0:
+                spaceship_y[i] = random.randrange(0,screen_height)
 
-            if Enemy_x[i] < shooter_frontx and Enemy_x[i] > shooter_x:
-                if Enemy_y[i] > shooter_y and Enemy_y[i] < shooter_topy or Enemy_topy[i] < shooter_topy and Enemy_topy[i] > shooter_y:
+            if spaceship_x[i] < shooter_frontx and spaceship_x[i] > shooter_x:
+                if spaceship_y[i] > shooter_y and spaceship_y[i] < shooter_topy or spaceship_topy[i] < shooter_topy and spaceship_topy[i] > shooter_y:
                     print("dead")
                     gameOver = True
 
@@ -429,15 +405,15 @@ class Shooter(pygame.sprite.Sprite):
         #if (collision==True):
             #message_display("You have crashed!")
     #def update(self):
-    #if word activated then rotate shooter to enemy Enemy
+    #if word activated then rotate shooter to enemy spaceship
     #self.image = pygame.transform.rotate(self.image,angle)
-##class Enemies(pygame.sprite.Sprite):
-##    """Enemies"""
+##class spaceships(pygame.sprite.Sprite):
+##    """Spaceships"""
 ##    image = pygame.image.load("shooter.png")
 ##    image = image.convert_alpha()
 ##    def __init__(self):
 ##        pygame.sprite.Sprite.__init__(self, self.groups)
-##    def Enemies(cordx,cordy,width,height,colour):
+##    def spaceships(cordx,cordy,width,height,colour):
 ##        pygame.draw.rect(screen,colour, [cordx,cordy,width,height])
 ##    def moveEnemy(self,Shooter):
 ##        dx, dy = self.rect.x - player.rect.x, self.rect.y - player.rect.y

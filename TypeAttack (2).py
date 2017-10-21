@@ -120,26 +120,25 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
             if action == "quit":
                 pygame.quit()
                 quit()
-            elif action == "wordz":
+            if action == "choosewords":
                 txtfilespage()
-            elif action == "play":
+            if action == "play":
                 textfile = "random.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
-##            elif action == "randomwords":
-##                textfile = "random.txt"
-##                with open(textfile,"r") as f:
-##                    words = f.readlines()
-##                    GameLoop(words)
-            elif action == "biology":
+                    GameLoop(words)
+            if action == "randomwords":
+                textfile = "random.txt"
+                with open(textfile,"r") as f:
+                    words = f.readlines()
+                    GameLoop(words)
+            if action == "biology":
                 textfile = "biology.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
-            elif action == "inputwords":
+                    GameLoop(words)
+            if action == "inputwords":
                 choose_words()
-            GameLoop(words)
     else:
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
 
@@ -165,17 +164,18 @@ def MainMenu():
         message_display("press ESC to pause", black, 100, "medium")
 
         button("Play", 175, 600, 300, 75, Dgreen, green, action = "play")
-        button("Choose words", 650,600,300,75, Dblue, blue, action = "wordz")
+        button("Choose words", 650,600,300,75, Dblue, blue, action = "choosewords")
         button("Quit", 1125,600,300,75, Dred, red, action = "quit")
 
         pygame.display.update()
                         
         clock.tick(15)
-    MainMenu = False
+    #return menu
+    #remove menu by setting it to false
         
-def Scores(score,x,y):
+def Scores(score):
     text = medium.render("Score: " + str(score), True, white)
-    screen.blit(text, [x,y])
+    screen.blit(text, [0,0])
 
 def Wave(wave):
     text = medium.render("Wave: " + str(wave), True, white)
@@ -211,19 +211,18 @@ def txtfilespage():
                 quit()
         screen.fill(white)
         message_display("Select which kind of words you would like to appear", black, -200, "medium")
-        #button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
-        button("Biology keywords", 175,600,300,75, Dblue, blue, action = "biology")
+        button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
+        button("Biology keywords", 650,600,300,75, Dblue, blue, action = "biology")
         button("input words", 1125,600,300,75, Dred, red, action = "inputwords")
         pygame.display.update()
                         
         clock.tick(15)
-    pageopen = False
-
+    #return pageopen
+    #remove pageopen screen by setting it to false
 def choose_words():
     choosing_words = True
     letters = []
-    screen.fill(black)
-    print("Working")
+    screen.fill(white)
     while choosing_words:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -243,13 +242,10 @@ def choose_words():
                     textfile == "inputwords.txt"
                     with open(textfile,"r") as f:
                         words = f.readlines()
-                    GameLoop(words)
+                
+                GameLoop(words)
     pygame.display.update()
     clock.tick(15)
-
-# textfile = ""
-# with open(textfile,"r") as f:
-#     words = f.readlines()
 
 def GameLoop(words):
     gameExit = False
@@ -294,18 +290,16 @@ def GameLoop(words):
 
     while not gameExit:
         while gameOver == True:
-
-            message_display("You are dead!", red, -50, "large")
-            Scores(score,800,700)
-            pygame.display.update()
+            message_display("You are dead!", red, 0, "large")
+            # pygame.display.update()
             time.sleep(2)
             Highscore(score)
             MainMenu()
             pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                 gameOver == False
-                 gameExit == True
+                 gameOver = False
+                 gameExit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                    pause(score, wave)
@@ -384,7 +378,7 @@ def GameLoop(words):
                  
         screen.fill(black)
     # do everything after filling screen in
-        Scores(score,0,0)
+        Scores(score)
         Wave(wave)
         for i in range(numEnemies):
             Enemies(Enemy_x[i],Enemy_y[i],word[i], i == activatedIndex)
@@ -393,7 +387,7 @@ def GameLoop(words):
             #     Enemy_y[i] = random.uniform(-0.5,0)
             # elif Enemy_y[i] < 625:
             #     Enemy_y[i] = random.uniform(0,0.5)
-            if Enemy_y[i] > 370:
+            if Enemy_y[i] > 325:
                 Enemy_y[i] -= 0.5
             else:
                 Enemy_y[i] += 0.5
