@@ -84,7 +84,7 @@ def pause(score, wave):
 
     paused = True
     screen.fill(black)
-    Scores(score)
+    Scores(score,0,0)
     Wave(wave)
     message_display("Paused",red,-50,"large")
     message_display("Press C to continue", white, 50, "medium")
@@ -109,6 +109,11 @@ def shooter(x,y):
 def button_text(text,colour,buttonx,buttony,buttonwidth,buttonheight,size = "medium"):
     TextSurf, TextRect = text_objects(text, colour, size)
     TextRect.center = ((buttonx+(buttonwidth/2)), (buttonheight/2)+buttony)
+    screen.blit(TextSurf,TextRect)
+
+def button_text2(text,colour,buttonx,buttony,size = "small"):
+    TextSurf, TextRect = text_objects(text, colour, size)
+    TextRect.center = (buttonx, buttony)
     screen.blit(TextSurf,TextRect)
 
 def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
@@ -140,6 +145,7 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
             elif action == "inputwords":
                 choose_words()
             GameLoop(words)
+
     else:
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
 
@@ -222,30 +228,42 @@ def txtfilespage():
 def choose_words():
     choosing_words = True
     letters = []
-    screen.fill(black)
     print("Working")
     while choosing_words:
+        screen.fill(white)
+        message_display("Press enter to input word", black, -200, "medium")
+        message_display("Press escape to play with inputed words", black, 100, "medium")
+        pygame.draw.rect(screen,black,(550,300,500,70))
+        button("", 550, 300, 500, 70, black, black)
+        button("", 1200, 150, 300, 500, black, black)
+        word_text("Word list",black,1180,120,110,25)
+        wordstring = "".join(letters)
+        rendered_word = large.render(wordstring, True, white)
+        screen.blit(rendered_word, (570, 300))
+        button_text(wordstring,black,1200,150,300,500)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
-                letters.append(chr(event.key))
-                if event.key == pygame.K_BACKSPACE:
+                if pygame.K_a <= event.key <= pygame.K_z: # checks the key pressed
+                    letters.append(chr(event.key))
+                if event.key == pygame.K_BACKSPACE and (len(letters) > 0):
                     del letters[-1]
-                if event.key == pygame.K_KP_ENTER:
-                    "".join(letters)
-                    with open("inputwords.txt","a") as f:
-                        file.write(letters)
-                    del letters[:]
-                message_display("Press escape to exit", black, -100, "medium")
+                if event.key == pygame.K_RETURN:
+                    #with open("inputwords.txt","a") as f:
+                    f = open("inputwords.txt","a")
+                    f.write(wordstring + "\n")
+                    f.close()
+                    del letters[:]            
                 if event.key == pygame.K_ESCAPE:
-                    textfile == "inputwords.txt"
+                    textfile = "inputwords.txt"
                     with open(textfile,"r") as f:
                         words = f.readlines()
                     GameLoop(words)
-    pygame.display.update()
-    clock.tick(15)
+        clock.tick(60)
+        pygame.display.update()
+    
 
 # textfile = ""
 # with open(textfile,"r") as f:
@@ -280,6 +298,7 @@ def GameLoop(words):
         splitword[i] = splitword[i][:-1]
         word[i] = "".join(splitword[i])
 
+    wave = 1
     shooter_x = 0
     shooter_y = 325
     shooter_height = 150
@@ -287,16 +306,13 @@ def GameLoop(words):
     shooter_frontx = shooter_x + shooter_width
     shooter_topy = shooter_y + shooter_height
     score = 0
-    wave = 1
     bullet_x = 150
     bullet_y = 400
     bullet_speed = 0.1
 
     while not gameExit:
         while gameOver == True:
-
             message_display("You are dead!", red, -50, "large")
-            Scores(score,800,700)
             pygame.display.update()
             time.sleep(2)
             Highscore(score)
@@ -409,6 +425,7 @@ def GameLoop(words):
                 if Enemy_y[i] > shooter_y and Enemy_y[i] < shooter_topy or Enemy_topy[i] < shooter_topy and Enemy_topy[i] > shooter_y:
                     print("dead")
                     gameOver = True
+                    open('inputwords.txt', 'w').close()
 
         shooter(shooter_x,shooter_y)
 
@@ -425,27 +442,8 @@ class Shooter(pygame.sprite.Sprite):
         self.image = Shooter.image
         self.rect = self.image.get_rect()
 
-    #def render(self,collision):
-        #if (collision==True):
-            #message_display("You have crashed!")
-    #def update(self):
-    #if word activated then rotate shooter to enemy Enemy
-    #self.image = pygame.transform.rotate(self.image,angle)
-##class Enemies(pygame.sprite.Sprite):
-##    """Enemies"""
-##    image = pygame.image.load("shooter.png")
-##    image = image.convert_alpha()
-##    def __init__(self):
-##        pygame.sprite.Sprite.__init__(self, self.groups)
-##    def Enemies(cordx,cordy,width,height,colour):
-##        pygame.draw.rect(screen,colour, [cordx,cordy,width,height])
-##    def moveEnemy(self,Shooter):
-##        dx, dy = self.rect.x - player.rect.x, self.rect.y - player.rect.y
-##        dist = math.hypot(dx, dy)
-##        dx, dy = dx / dist, dy / dist
-##        self.rect.x += dx * self.speed
-##        self.rect.y += dy * self.speed
-MainMenu()
+
+choose_words()
 GameLoop()
 pygame.quit()
 quit()
