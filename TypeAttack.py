@@ -233,6 +233,7 @@ def choose_words():
         screen.fill(white)
         message_display("Press enter to input word", black, -200, "medium")
         message_display("Press escape to play with inputed words", black, 100, "medium")
+        message_display("Press backspace to delete a letter", black, -300, "medium")
         pygame.draw.rect(screen,black,(550,300,500,70))
         button("", 550, 300, 500, 70, black, black)
         button("", 1200, 150, 300, 500, black, black)
@@ -240,13 +241,13 @@ def choose_words():
         wordstring = "".join(letters)
         rendered_word = large.render(wordstring, True, white)
         screen.blit(rendered_word, (570, 300))
-        button_text(wordstring,black,1200,150,300,500)
+        button_text(wordstring,white,1200,150,300,500)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
-                if pygame.K_a <= event.key <= pygame.K_z: # checks the key pressed
+                if pygame.K_a <= event.key <= pygame.K_z and (len(letters) < 12): # checks the key pressed
                     letters.append(chr(event.key))
                 if event.key == pygame.K_BACKSPACE and (len(letters) > 0):
                     del letters[-1]
@@ -432,21 +433,22 @@ def GameLoop(words):
 
         pygame.display.update()
         clock.tick(60)
-
-class Shooter(pygame.sprite.Sprite):
-    """Shooter"""
-    image = pygame.image.load("shooter.png")
-    image = image.convert_alpha()
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self, self.groups)
-        self.image = Shooter.image
-        self.rect = self.image.get_rect()
-
-
-choose_words()
+        
+MainMenu()
 GameLoop()
 pygame.quit()
 quit()
+
+# class Shooter(pygame.sprite.Sprite):
+#     """Shooter"""
+#     image = pygame.image.load("shooter.png")
+#     image = image.convert_alpha()
+#     def __init__(self):
+#         pygame.sprite.Sprite.__init__(self, self.groups)
+#         self.image = Shooter.image
+#         self.rect = self.image.get_rect()
+
+
 
 
 #class Bullet(pygame.sprite.Sprite):
