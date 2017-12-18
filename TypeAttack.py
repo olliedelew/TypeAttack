@@ -4,13 +4,11 @@ import random
 
 pygame.init()
 
+## Variables for the dimensions of the screen size
 screen_width = 1600
 screen_height = 800
 
-#MainLoop = True
-#Loop1 = True
-#Loop2 = False
-
+## Colours list
 white = (255,255,255)
 black = (0,0,0)
 red = (255,0,0)
@@ -21,7 +19,8 @@ blue = (0,0,255)
 green = (0,255,0)
 Dgreen = (26,153,24)
 
-screen = pygame.display.set_mode((screen_width,screen_height)) 
+screen = pygame.display.set_mode((screen_width,screen_height)) ## Creates a screen with the dimensions of the variables
+                                                               ## screen_width and screen_height
 
 small = pygame.font.SysFont("freesansbold.ttf", 25)
 medium = pygame.font.SysFont("freesansbold.ttf", 50)
@@ -29,34 +28,18 @@ large = pygame.font.SysFont("freesansbold.ttf", 100)
 
 pygame.display.set_caption("Type Attack")
 clock = pygame.time.Clock()
-#Pixel = pygame.PixelArray(screen)
-#del Pixela
-#Pixel[10][10] = red
+
 shooter_image = pygame.image.load("shooter.png")
 enemy_image = pygame.image.load("enemy.png")
 bullet_image = pygame.image.load("bullet.png") 
 
-
-#for i in range (len (words)):
-    #print(words[i])
-#word = random.choice(words)
-
-##with open("wordy.txt","r") as f:
-##    for line in f:
-##        for word in line.split():
-##           words = f.readlines()
-##print(words)
-
 def Enemies(cordx,cordy,word, isActivated):
-    #for i in range(numEnemies)
     screen.blit(enemy_image,(cordx,cordy))
     if isActivated:
         pygame.draw.rect(screen,white,[cordx+29,cordy+50,110,25])
     else:    
         pygame.draw.rect(screen,green,[cordx+29,cordy+50,110,25])
     word_text(word,black,cordx+29,cordy+50,110,25)
-
-    #pygame.display.update()
 
 def word_text(text,colour,buttonx,buttony,buttonwidth,buttonheight,size = "small"):
     TextSurf, TextRect = text_objects(text, colour, size)
@@ -97,8 +80,6 @@ def pause(score, wave):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_c:
                     paused = False
-        #screen.fill(black)
-
         clock.tick(5)
     
 def shooter(x,y):
@@ -131,17 +112,10 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
                 textfile = "random.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
-##            elif action == "randomwords":
-##                textfile = "random.txt"
-##                with open(textfile,"r") as f:
-##                    words = f.readlines()
-##                    GameLoop(words)
             elif action == "biology":
                 textfile = "biology.txt"
                 with open(textfile,"r") as f:
                     words = f.readlines()
-                    #GameLoop(words)
             elif action == "inputwords":
                 choose_words()
             GameLoop(words)
@@ -163,6 +137,7 @@ def MainMenu():
                 quit()
 
         screen.fill(white)
+        ## Call function "showHighscore" with "high" which is a variable showing the highest score
         showHighscore(high)
         message_display("Type Attack", blueish, -150, "large")
         message_display("Type the words as quick as you can", black, -80, "medium")
@@ -179,33 +154,49 @@ def MainMenu():
         clock.tick(15)
     MainMenu = False
         
+## Create a score function with the score variable and an x and y coordinate
 def Scores(score,x,y):
+    ## Display the text "Score: (score)"
     text = medium.render("Score: " + str(score), True, white)
+    ## Displays the text on the screen
     screen.blit(text, [x,y])
 
 def Wave(wave):
     text = medium.render("Wave: " + str(wave), True, white)
     screen.blit(text, [800,0])
 
-
+## Open and read the "Highscore" file
 with open("Highscore.txt","r") as h:
+    ## Set variable high to the highscore
     high = h.read()
     print(high)
+    ## Set variable high to an integer
     high = int(high)
     print(high)
 
+## Create a highscore function with the score variable
 def Highscore(score):
+    ## Set variable overwrite to open the "Highscore" file
     overwrite = open("Highscore.txt","w")
+    ## Set variable highscre to high
     highscre = high
+    ## If the score is greater than the highscore
     if score > highscre:
+        ## Set the highscore equal to the score
         highscre = score 
+        ## Overwrite the highscore textfile
         overwrite.write(str(highscre))
+        ## Print highscre
         return highscre
     else:
+        ## If score is less than the highscore
         overwrite.write(str(highscre))
 
+## Create a showHighscore function to show the highscore
 def showHighscore(highscre):
+    ## Display the text "Score: (score)"
     text = medium.render("Highscore: " + str(high), True, black)
+    ## Displays the text on the screen at coordinates (700,0)
     screen.blit(text, [700,0])
 
 def txtfilespage():
@@ -217,7 +208,6 @@ def txtfilespage():
                 quit()
         screen.fill(white)
         message_display("Select which kind of words you would like to appear", black, -200, "medium")
-        #button("Random words", 175, 600, 300, 75, Dgreen, green, action = "randomwords")
         button("Biology keywords", 175,600,300,75, Dblue, blue, action = "biology")
         button("input words", 1125,600,300,75, Dred, red, action = "inputwords")
         pygame.display.update()
@@ -251,8 +241,7 @@ def choose_words():
                     letters.append(chr(event.key))
                 if event.key == pygame.K_BACKSPACE and (len(letters) > 0):
                     del letters[-1]
-                if event.key == pygame.K_RETURN:
-                    #with open("inputwords.txt","a") as f:
+                if event.key == pygame.K_RETURN and (len(letters) > 0):
                     f = open("inputwords.txt","a")
                     f.write(wordstring + "\n")
                     f.close()
@@ -264,11 +253,6 @@ def choose_words():
                     GameLoop(words)
         clock.tick(60)
         pygame.display.update()
-    
-
-# textfile = ""
-# with open(textfile,"r") as f:
-#     words = f.readlines()
 
 def GameLoop(words):
     gameExit = False
@@ -306,6 +290,7 @@ def GameLoop(words):
     shooter_width = 150
     shooter_frontx = shooter_x + shooter_width
     shooter_topy = shooter_y + shooter_height
+    ## Set the score to 0
     score = 0
     bullet_x = 150
     bullet_y = 400
@@ -316,6 +301,7 @@ def GameLoop(words):
             message_display("You are dead!", red, -50, "large")
             pygame.display.update()
             time.sleep(2)
+            ## Show the highscore
             Highscore(score)
             MainMenu()
             pygame.display.update()
@@ -326,38 +312,23 @@ def GameLoop(words):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                    pause(score, wave)
-        #for i in range(len(splitword)):
-            #for event in pygame.event.get():
-##                if event.type == pygame.KEYDOWN:
-##                    key = chr(event.key)
-##                    print(key)
-##                    if key == splitword[0]:
-##                        key2 = chr(event.key)
-##                        print(key)
-##                        if key2 == splitword[1]:
-##                            key3 = chr(event.key)
-
-        #for event in pygame.event.get():
-            #print(event)
             if event.type == pygame.KEYDOWN:
                 key = chr(event.key)
                 if activatedIndex == -1:
                     bestMatchingIndex = -1 # index, xval
                     bestMatchingValue = 2000 # index, xval
                     for i in range(numEnemies):
-                        # print('Enemy:', Enemy_x[i])
-                        # print('best', bestMatching[1])
                         if Enemy_x[i] < bestMatchingValue and  key == splitword[i][0]:
                             bestMatchingIndex = i
                             bestMatchingValue = Enemy_x[i]
                     if bestMatchingIndex > -1:
                         activatedIndex = bestMatchingIndex
                     print(activatedIndex)
-                # print
                 if activatedIndex > -1:
                     print(key)
                     print(activatedIndex)
                     if key == splitword[activatedIndex][0]:
+                        word[activatedIndex] = word[activatedIndex][1:]
                         splitword[activatedIndex].pop(0)
                         print("".join(splitword[activatedIndex]))
                         print(len(splitword[activatedIndex]))
@@ -368,7 +339,6 @@ def GameLoop(words):
                                     bullet_x += bullet_speed
                                     print("bullet X: ", bullet_x)
                                     print("Enemy X: ", Enemy_x[activatedIndex])
-                                    #break
                                     bullet_y += bullet_speed
                                     print("bul Y < spc Y: ", bullet_y) #(y is inverted in pygame)
                                     print("Enemy Y: ", Enemy_y[activatedIndex])
@@ -387,8 +357,7 @@ def GameLoop(words):
                                     break
                                 pygame.display.update()
                                 clock.tick(60)                            
-                            # print("Score: ", score)
-                            # print("Enemy destroyed")
+                            ## Increase the score by 1 point                         
                             score += 1
                             word[activatedIndex] = random.choice(words)
                             splitword[activatedIndex] = list(word[activatedIndex])
@@ -400,28 +369,17 @@ def GameLoop(words):
                             activatedIndex = -1
                  
         screen.fill(black)
-    # do everything after filling screen in
+        ## Call the Score function with the score at coordinates (0,0)
         Scores(score,0,0)
         Wave(wave)
         for i in range(numEnemies):
             Enemies(Enemy_x[i],Enemy_y[i],word[i], i == activatedIndex)
             Enemy_x[i] += Enemy_speed[i]
-            # if Enemy_y[i] > 0:
-            #     Enemy_y[i] = random.uniform(-0.5,0)
-            # elif Enemy_y[i] < 625:
-            #     Enemy_y[i] = random.uniform(0,0.5)
             if Enemy_y[i] > 370:
                 Enemy_y[i] -= 0.5
             else:
                 Enemy_y[i] += 0.5
-            # if Enemy_x[i] < -(Enemy_y:
-            #     Enemy_x[i] = screen_width + Enemy_width
-            #     Enemy_y[i] = random.randrange(0,screen_height)
-            if Enemy_y[i] > screen_height - Enemy_height[i]:
-                Enemy_y[i] = random.randrange(0,screen_height)
-            elif Enemy_y[i] < 0:
-                Enemy_y[i] = random.randrange(0,screen_height)
-
+                
             if Enemy_x[i] < shooter_frontx and Enemy_x[i] > shooter_x:
                 if Enemy_y[i] > shooter_y and Enemy_y[i] < shooter_topy or Enemy_topy[i] < shooter_topy and Enemy_topy[i] > shooter_y:
                     print("dead")
@@ -430,52 +388,9 @@ def GameLoop(words):
 
         shooter(shooter_x,shooter_y)
 
-
         pygame.display.update()
         clock.tick(60)
         
 MainMenu()
-GameLoop()
 pygame.quit()
 quit()
-
-# class Shooter(pygame.sprite.Sprite):
-#     """Shooter"""
-#     image = pygame.image.load("shooter.png")
-#     image = image.convert_alpha()
-#     def __init__(self):
-#         pygame.sprite.Sprite.__init__(self, self.groups)
-#         self.image = Shooter.image
-#         self.rect = self.image.get_rect()
-
-
-
-
-#class Bullet(pygame.sprite.Sprite):
- #   def __init__(self):
-  #      pygame.sprite.Sprite.__init__(self)
-
-##def Points(count):
-##    font = pygame.font.SysFont(None, 25)
-##    text = font.render("Dodged: "+str(count), True, black)
-##    gameDisplay.blit(text,(0,0))
-    
-##def text_objects(text, font):
-##    textSurface = font.render(text, True, black)
-##    return textSurface, textSurface.get_rect()
-##    
-##def MainMenu():
-##    menu = True
-##    TextSurf, TextRect = text_objects(text, largeText)
-##    while menu:
-##        for event in pygame.event.get():
-##            if event.type == pygame.QUIT:
-##                pygame.quit()
-##                quit()
-##        screen.fill(white)
-##        largeText = pygame.font.Font("freesansbold.ttf",115)
-##        TextSurf, TextRect = text_objects("Type Attack", largeText)
-##        TextRect.center = ((display_width/2),(display_height/2))
-##        screen.blit(TextSurf, TextRect)
-##        pygame.display.update()
-##        clock.tick(15)
