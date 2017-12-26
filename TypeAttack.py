@@ -1,6 +1,7 @@
 import pygame
 import time
 import random
+import math
 
 pygame.init()
 
@@ -254,10 +255,11 @@ def choose_words():
         clock.tick(60)
         pygame.display.update()
 
-def GameLoop(words):
+def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
     gameExit = False
     gameOver = False
-    numEnemies = 4
+    # numEnemies = 4
+    Enemy_speed_num = -10
     Enemy_height = [0]*numEnemies
     Enemy_width = [0]*numEnemies
     Enemy_y = [0]*numEnemies
@@ -270,6 +272,7 @@ def GameLoop(words):
     activatedword = [False]*numEnemies
     anyActivated = False
     activatedIndex = -1
+    bullets = [] # array of arrays [current_x, current_y, index of enemy]
     for i in range(numEnemies):
         Enemy_height[i] = 50
         Enemy_width[i] = 50
@@ -277,13 +280,13 @@ def GameLoop(words):
         Enemy_x[i] = random.randrange(1750, 1950)
         Enemy_backx[i] = Enemy_x[i] + Enemy_width[i]
         Enemy_topy[i] = Enemy_y[i] + Enemy_height[i]
-        Enemy_speed[i] = -3
+        Enemy_speed[i] = Enemy_speed_num
         word[i] = random.choice(words)
         splitword[i] = list(word[i])
         splitword[i] = splitword[i][:-1]
         word[i] = "".join(splitword[i])
 
-    wave = 1
+    # wave = 1
     shooter_x = 0
     shooter_y = 325
     shooter_height = 150
@@ -291,12 +294,13 @@ def GameLoop(words):
     shooter_frontx = shooter_x + shooter_width
     shooter_topy = shooter_y + shooter_height
     ## Set the score to 0
-    score = 0
+    # score = 0
     bullet_x = 150
     bullet_y = 400
-    bullet_speed = 0.1
-
+    bullet_speed = Enemy_speed[0] * -20
+    kills = 0
     while not gameExit:
+        screen.fill(black)
         while gameOver == True:
             message_display("You are dead!", red, -50, "large")
             pygame.display.update()
@@ -305,6 +309,47 @@ def GameLoop(words):
             Highscore(score)
             MainMenu()
             pygame.display.update()
+        for i in range(len(bullets)):
+            bullet = bullets[i]
+            if bullets[i] == [-1,-1,-1]:
+                continue
+            Bullet(bullet[0],bullet[1])
+            bullet_distance_x = Enemy_x[bullet[2]] - bullet[0]
+            bullet_distance_y = Enemy_y[bullet[2]] - bullet[1]
+            bullet_distance_straight = math.sqrt(pow(bullet_distance_x,2) + pow(bullet_distance_y,2))
+            bullet_move_x = abs((bullet_speed / bullet_distance_straight) * bullet_distance_x)
+            bullet_move_y = abs((bullet_speed / bullet_distance_straight) * bullet_distance_y)
+            if bullet[0] < Enemy_x[bullet[2]]:
+                bullet[0] = min(bullet[0] + bullet_move_x,Enemy_x[bullet[2]])
+                print("bullet X: ", bullet[0])
+                print("Enemy X: ", Enemy_x[bullet[2]])
+            if bullet[0] > Enemy_x[bullet[2]]:
+                bullet[0] = max(bullet[0] - bullet_move_x,Enemy_x[bullet[2]])
+                print("bullet X: ", bullet[0])
+                print("Enemy X: ", Enemy_x[bullet[2]])
+            if bullet[1] > Enemy_y[bullet[2]]:
+                bullet[1] = max(bullet[1] - bullet_move_y,Enemy_y[bullet[2]])
+                print("bul Y < spc Y: ", bullet[1]) #(y is inverted in pygame)
+                print("Enemy Y: ", Enemy_y[bullet[2]])
+            if bullet[1] < Enemy_y[bullet[2]]:
+                bullet[1] = min(bullet[1] + bullet_move_y,Enemy_y[bullet[2]])
+                print("bul Y < spc Y: ", bullet[1]) #(y is inverted in pygame)
+                print("Enemy Y: ", Enemy_y[bullet[2]])
+            if bullet[0] == Enemy_x[bullet[2]] and bullet[1] == Enemy_y[bullet[2]]:
+                bullets[i] = [-1,-1,-1]
+                ## Increase the score by 1 point                         
+                score += 1
+                kills += 1
+                word[bullet[2]] = random.choice(words)
+                splitword[bullet[2]] = list(word[bullet[2]])
+                splitword[bullet[2]] = splitword[bullet[2]][:-1]
+                word[bullet[2]] = "".join(splitword[bullet[2]])
+                Enemy_x[bullet[2]] = -10
+                Enemy_y[bullet[2]] = random.randrange(0, screen_height - Enemy_height[bullet[2]])
+                print(Enemy_x[bullet[2]],Enemy_y[bullet[2]])
+                if kills == numEnemies:
+                    return GameLoop(words,score,wave + 1, numEnemies + 1)
+                continue
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                  gameOver == False
@@ -318,9 +363,10 @@ def GameLoop(words):
                     bestMatchingIndex = -1 # index, xval
                     bestMatchingValue = 2000 # index, xval
                     for i in range(numEnemies):
-                        if Enemy_x[i] < bestMatchingValue and  key == splitword[i][0]:
-                            bestMatchingIndex = i
-                            bestMatchingValue = Enemy_x[i]
+                        if len(splitword[i]) > 0:
+                            if Enemy_x[i] < bestMatchingValue and  key == splitword[i][0]:
+                                bestMatchingIndex = i
+                                bestMatchingValue = Enemy_x[i]
                     if bestMatchingIndex > -1:
                         activatedIndex = bestMatchingIndex
                     print(activatedIndex)
@@ -333,53 +379,24 @@ def GameLoop(words):
                         print("".join(splitword[activatedIndex]))
                         print(len(splitword[activatedIndex]))
                         if not splitword[activatedIndex]:
-                            Bullet(bullet_x,bullet_y)
-                            while (bullet_x != Enemy_x) and (bullet_y != Enemy_y[activatedIndex]):
-                                if bullet_x < Enemy_x[activatedIndex] and bullet_y < Enemy_y[activatedIndex]:
-                                    bullet_x += bullet_speed
-                                    print("bullet X: ", bullet_x)
-                                    print("Enemy X: ", Enemy_x[activatedIndex])
-                                    bullet_y += bullet_speed
-                                    print("bul Y < spc Y: ", bullet_y) #(y is inverted in pygame)
-                                    print("Enemy Y: ", Enemy_y[activatedIndex])
-                                    break
-                                elif bullet_x < Enemy_x[activatedIndex] and bullet_y > Enemy_y[activatedIndex]:
-                                    bullet_x += bullet_speed
-                                    print("bullet X: ", bullet_x)
-                                    print("Enemy X: ", Enemy_x[activatedIndex])
-                                    bullet_y -= bullet_speed
-                                    print("bul Y > spc Y: ", bullet_y) #(y is inverted in pygame)
-                                    print("Enemy Y: ", Enemy_y[activatedIndex])
-                                    break
-                                elif bullet_x < Enemy_x[activatedIndex] and bullet_y == Enemy_y[activatedIndex]:
-                                    bullet_x += bullet_speed
-                                    print("bul Y = spc Y", bullet_y)
-                                    break
-                                pygame.display.update()
-                                clock.tick(60)                            
-                            ## Increase the score by 1 point                         
-                            score += 1
-                            word[activatedIndex] = random.choice(words)
-                            splitword[activatedIndex] = list(word[activatedIndex])
-                            splitword[activatedIndex] = splitword[activatedIndex][:-1]
-                            word[activatedIndex] = "".join(splitword[activatedIndex])
-                            Enemy_x[activatedIndex] = 1750
-                            Enemy_y[activatedIndex] = random.randrange(0, screen_height - Enemy_height[activatedIndex])
-                            print(Enemy_x[activatedIndex],Enemy_y[activatedIndex])
+                            bullets.append([bullet_x,bullet_y,activatedIndex])
                             activatedIndex = -1
-                 
-        screen.fill(black)
+        
         ## Call the Score function with the score at coordinates (0,0)
         Scores(score,0,0)
         Wave(wave)
         for i in range(numEnemies):
+            if Enemy_x[i] == -10: # magic position where we dont move them from
+                continue
             Enemies(Enemy_x[i],Enemy_y[i],word[i], i == activatedIndex)
-            Enemy_x[i] += Enemy_speed[i]
-            if Enemy_y[i] > 370:
-                Enemy_y[i] -= 0.5
-            else:
-                Enemy_y[i] += 0.5
-                
+            distance_x = Enemy_x[i]
+            distance_y = Enemy_y[i] - 370
+            distance_straight = math.sqrt(pow(distance_x,2) + pow(distance_y,2))
+            move_x = (Enemy_speed[i] / distance_straight) * distance_x
+            move_y = (Enemy_speed[i] / distance_straight) * distance_y
+            Enemy_x[i] += move_x
+            Enemy_y[i] += move_y
+
             if Enemy_x[i] < shooter_frontx and Enemy_x[i] > shooter_x:
                 if Enemy_y[i] > shooter_y and Enemy_y[i] < shooter_topy or Enemy_topy[i] < shooter_topy and Enemy_topy[i] > shooter_y:
                     print("dead")
