@@ -36,9 +36,9 @@ pygame.display.set_caption("Type Attack")
 clock = pygame.time.Clock()
 
 ## Create the images for the sprites
-shooter_image = pygame.image.load("shooter.png")
+Chevron_image = pygame.image.load("shooter.png")
 enemy_image = pygame.image.load("enemy.png")
-bullet_image = pygame.image.load("bullet.png") 
+bullet_image = pygame.image.load("bullet.png")
 
 ## Create an enemy function at a given x and y coordinate and a given word
 def Enemies(cordx,cordy,word, isActivated):
@@ -114,18 +114,10 @@ def pause(score, wave):
         ## FPS
         clock.tick(5)
     
-## Create the shooter at a given x and y coordinate
-def shooter(x,y):
-    ## Displays the shooter image
-    screen.blit(shooter_image,(x,y))
-
-## Display text in the middle of a button function
-def button_text(text,colour,buttonx,buttony,buttonwidth,buttonheight,size = "medium"):
-    TextSurf, TextRect = text_objects(text, colour, size)
-    ## Finds the midpoint of the button and writes the text there
-    TextRect.center = ((buttonx+(buttonwidth/2)), (buttonheight/2)+buttony)
-    ## Displays the text to the screen
-    screen.blit(TextSurf,TextRect)
+## Create the Chevron at a given x and y coordinate
+def Chevron(x,y):
+    ## Displays the Chevron image
+    screen.blit(Chevron_image,(x,y))
 
 ## Create a button function with a given text, x and y coordinate, height, colour and action
 def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
@@ -175,7 +167,7 @@ def button(text,x,y,width,height,darkcolour,lightcolour,action = None):
         ## Makes the colour of the button dark
         pygame.draw.rect(screen,darkcolour,(x,y,width,height))
     ## Displays the button text
-    button_text(text,black,x,y,width,height)
+    word_text(text,black,x,y,width,height, size = "medium")
 
 
 ## Create the bullet at a given x and y coordiante
@@ -220,14 +212,14 @@ def MainMenu():
 ## Create a score function with the score variable and an x and y coordinate
 def Scores(score,x,y):
     ## Display the text "Score: (score)"
-    text = medium.render("Score: " + str(score), True, white)
+    text = medium.render("Score: " + str(score), True, black)
     ## Displays the text on the screen
     screen.blit(text, [x,y])
 
 ## Create a wave function which outputs the wave number the user has reached
 def Wave(wave):
     ## Display the text "Wave: (wave)"
-    text = medium.render("Wave: " + str(wave), True, white)
+    text = medium.render("Wave: " + str(wave), True, black)
     ## Display the text on screen at coordinates (800,0)
     screen.blit(text, [800,0])
 
@@ -308,17 +300,12 @@ def choose_words():
         message_display("Press backspace to delete a letter", black, -300, "medium")
         ## Draw a black rectangle in the middle of the screen
         pygame.draw.rect(screen,black,(550,300,500,70))
-        button("", 550, 300, 500, 70, black, black)
-        button("", 1200, 150, 300, 500, black, black)
-        word_text("Word list",black,1180,120,110,25)
         ## Create a variable wordstring which holds the joined letters
         wordstring = "".join(letters)
-        ## 
+        ## Render the wordstring in large font
         rendered_word = large.render(wordstring, True, white)
         ## Display the variable rendered_word onto the screen 
         screen.blit(rendered_word, (570, 300))
-        ## Create text on the screen that shows the letters the user has typed
-        button_text(wordstring,white,1200,150,300,500)
         ## Collects all the events that are happening
         for event in pygame.event.get():
             ## If the game has been exited then
@@ -370,7 +357,7 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
     ## Set Enemy speed 
     Enemy_speed_num = -1.5
     ## Set the bullet speed multiplier
-    bullet_speed_multiplier = -3
+    bullet_speed_multiplier = 12
     ## Create lists with the length of numEnemies
     Enemy_height = [0]*numEnemies
     Enemy_width = [0]*numEnemies
@@ -389,9 +376,9 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
     bullets = [] # array of arrays [current_x, current_y, index of enemy]
     ## for loop from 0 to numEnemies
     for i in range(numEnemies):
-        ## Set each Enemy_height to 50
+        ## Set each Enemy's height
         Enemy_height[i] = 50
-        ## Set each Enemy_width to 50
+        ## Set each Enemy's width
         Enemy_width[i] = 50
         ## Set each Enemy_y to any random value between 0 and the screen height (- Enemy_height)
         Enemy_y[i] = random.randrange(0, screen_height - Enemy_height[i])
@@ -401,33 +388,31 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
         Enemy_backx[i] = Enemy_x[i] + Enemy_width[i]
         ## Set each enemy top y coordinate to the bottom y coordinate plus enemy height
         Enemy_topy[i] = Enemy_y[i] + Enemy_height[i]
-        ## Set each enemy's speed to Enemy speed
+        ## Set each enemies speed to Enemy speed
         Enemy_speed[i] = Enemy_speed_num
         ## Give each Enemy a random word from the chosen textfile
         word[i] = random.choice(words)
+        ## Removes whitespace from the word string
+        word[i] = word[i].strip()
         ## Set each splitword to the corrosponding word split up 
         splitword[i] = list(word[i])
-        ## Delete the last element of the splitword as it is an incorrect character
-        splitword[i] = splitword[i][:-1]
-        ## Set each word to the joined up splitword
-        word[i] = "".join(splitword[i])
-    ## Set the shooter x and y coordinates
-    shooter_x = 0
-    shooter_y = 325
-    ## Set the shooter height and width
-    shooter_height = 150
-    shooter_width = 150
-    ## Set the shooter front x to the shooter x + the shooter width
-    shooter_frontx = shooter_x + shooter_width
-    ## Set the shooter top y to the shooter y + the shooter height
-    shooter_topy = shooter_y + shooter_height
+    ## Set the Chevron x and y coordinates
+    Chevron_x = 0
+    Chevron_y = 325
+    ## Set the Chevron height and width
+    Chevron_height = 150
+    Chevron_width = 150
+    ## Set the Chevron front x to the Chevron x + the Chevron width
+    Chevron_frontx = Chevron_x + Chevron_width
+    ## Set the Chevron top y to the Chevron y + the Chevron height
+    Chevron_topy = Chevron_y + Chevron_height
     ## Set the bullet x and y coordinates
     bullet_x = 150
     bullet_y = 400
     ## Set the bullet speed to the enemy's speed timesed by the bullet speed multiplier as the bullet
     ## Has to be faster than the enemy speed or else it wont reach the enemy in time 
     ## and will have to go backwards to catch up
-    bullet_speed = Enemy_speed[0] * bullet_speed_multiplier 
+    bullet_speed = Enemy_speed_num * bullet_speed_multiplier 
     ## Set kills to zero at the start of the game 
     kills = 0
     ## While loop that ends when the game is exited (gameExit = True) 
@@ -437,7 +422,7 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
         ## While loop for when the game ends (enemy touches the user)
         while gameOver == True:
             ## Display an end game message
-            message_display("You are dead!", red, -50, "large")
+            message_display("Game Over!", red, -50, "large")
             ## Update the screen
             pygame.display.update()
             ## Wait 2 seconds
@@ -461,33 +446,23 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
             bullet_move_y = abs((bullet_speed / bullet_distance_straight) * bullet_distance_y)
             if bullet[0] < Enemy_x[bullet[2]]:
                 bullet[0] = min(bullet[0] + bullet_move_x,Enemy_x[bullet[2]])
-                print("bullet X: ", bullet[0])
-                print("Enemy X: ", Enemy_x[bullet[2]])
             if bullet[0] > Enemy_x[bullet[2]]:
                 bullet[0] = max(bullet[0] - bullet_move_x,Enemy_x[bullet[2]])
-                print("bullet X: ", bullet[0])
-                print("Enemy X: ", Enemy_x[bullet[2]])
             if bullet[1] > Enemy_y[bullet[2]]:
                 bullet[1] = max(bullet[1] - bullet_move_y,Enemy_y[bullet[2]])
-                print("bul Y < spc Y: ", bullet[1]) #(y is inverted in pygame)
-                print("Enemy Y: ", Enemy_y[bullet[2]])
             if bullet[1] < Enemy_y[bullet[2]]:
                 bullet[1] = min(bullet[1] + bullet_move_y,Enemy_y[bullet[2]])
-                print("bul Y < spc Y: ", bullet[1]) #(y is inverted in pygame)
-                print("Enemy Y: ", Enemy_y[bullet[2]])
             if bullet[0] == Enemy_x[bullet[2]] and bullet[1] == Enemy_y[bullet[2]]:
                 bullets[i] = [-1,-1,-1]
                 ## Increase the score by 1 point                         
                 score += 1
                 ## Increase the kills by 1
                 kills += 1
-                word[bullet[2]] = random.choice(words)
+                word[bullet[2]] = ""#random.choice(words)
+                #word[bullet[2]] = word[i].strip()
                 splitword[bullet[2]] = list(word[bullet[2]])
-                splitword[bullet[2]] = splitword[bullet[2]][:-1]
-                word[bullet[2]] = "".join(splitword[bullet[2]])
                 Enemy_x[bullet[2]] = -10
                 Enemy_y[bullet[2]] = random.randrange(0, screen_height - Enemy_height[bullet[2]])
-                print(Enemy_x[bullet[2]],Enemy_y[bullet[2]])
                 ## If all the enemies in the wave are killed
                 if kills == numEnemies:
                     ## Use recursion to run the GameLoop again with an increased wave number and enemy number
@@ -514,19 +489,21 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
                     ## activated
                     bestMatchingIndex = -1 # index, xval
                     ## Set variable bestMatchingValue equal to 2000, this is the furthest distance
-                    ## the enemy can be from the "shooter"
+                    ## the enemy can be from the "Chevron"
                     bestMatchingValue = 2000
                     ## for loop from 0 to numEnemies
                     for i in range(numEnemies):
-                        ## If the Enemy_x is less than the furthest distance away (which it must be)
-                        ## and the key typed is equal to the corrosponding element in the splitwords
-                        ## list
-                        if Enemy_x[i] < bestMatchingValue and  key == splitword[i][0]:
-                            ## Set bestMatchingIndex equal to the "i" of whichever enemy
-                            ## has the corrosponding starting character equal to key
-                            bestMatchingIndex = i
-                            ## Set the bestMatchingValue equal to the Enemy_x value
-                            bestMatchingValue = Enemy_x[i]
+                        ## if the length of splitwords is greater than 0
+                        if len(splitword[i]) > 0:
+                            ## If the Enemy_x is less than the furthest distance away (which it must be)
+                            ## and the key typed is equal to the corrosponding element in the splitwords
+                            ## list
+                            if Enemy_x[i] < bestMatchingValue and Enemy_x[i] > -10 and  key == splitword[i][0]:
+                                ## Set bestMatchingIndex equal to the "i" of whichever enemy
+                                ## has the corrosponding starting character equal to key
+                                bestMatchingIndex = i
+                                ## Set the bestMatchingValue equal to the Enemy_x value
+                                bestMatchingValue = Enemy_x[i]
                     ## If the bestMatchingIndex is greater than -1
                     if bestMatchingIndex > -1:
                         ## Set activatedIndex equal to bestMatching index
@@ -557,7 +534,7 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
         ## For loop from 0 top num Enemies
         for i in range(numEnemies):
             ## magic position where we dont move them from
-            if Enemy_x[i] == -10:
+            if Enemy_x[i] <= -10:
                 ## Continue the loop 
                 continue
             ## Call the Enemies function to create an enemy in a given x and y with a random word and an index number
@@ -576,23 +553,19 @@ def GameLoop(words, score = 0, wave = 1, numEnemies = 4):
             Enemy_x[i] += move_x
             ## Add the value of move_y to Enemy_y to move the enemy
             Enemy_y[i] += move_y
-            ## Checks if the Enemy x is less than the shooter x
-            if Enemy_x[i] < shooter_frontx and Enemy_x[i] > shooter_x:
-                ## Then Checks if the enemy y is in between the shooter y
-                if Enemy_y[i] > shooter_y and Enemy_y[i] < shooter_topy or Enemy_topy[i] < shooter_topy and Enemy_topy[i] > shooter_y:
+            ## Checks if the Enemy x is less than the Chevron x
+            if Enemy_x[i] < Chevron_frontx and Enemy_x[i] > Chevron_x:
+                ## Then Checks if the enemy y is in between the Chevron y
+                if Enemy_y[i] > Chevron_y and Enemy_y[i] < Chevron_topy or Enemy_topy[i] < Chevron_topy and Enemy_topy[i] > Chevron_y:
                     ## If both are true then set the gameOver variable to True
                     gameOver = True
                     ## Open and clear the inputwords textfile then close it
                     open('inputwords.txt', 'w').close()
-        ## Call the shooter function to create the shooter at the given x and y
-        shooter(shooter_x,shooter_y)
+        ## Call the Chevron function to create the Chevron at the given x and y
+        Chevron(Chevron_x,Chevron_y)
         ## Update the display
         pygame.display.update()
         ## Set the FPS to 60
         clock.tick(60)
 ## Start the game at the Main Menu by calling the MainMenu function
 MainMenu()
-## Quit Pygame
-pygame.quit()
-## Quit Python
-quit()
